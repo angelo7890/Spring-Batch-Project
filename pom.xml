@@ -50,10 +50,16 @@
 			<artifactId>spring-batch-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- como o banco de dados é em memoria e a aplicacao roda e para, entao nao da para acessar os dados salvos, mas se quiser ver os dados basta descomentar
+		essa dependecia do spring web e acessar para a aplicacao nao parar e ficar rodando, ai basta acessar o link do h2 e ver os dados salvos
+		-->
+		<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		-->
 	</dependencies>
 
 	<build>
