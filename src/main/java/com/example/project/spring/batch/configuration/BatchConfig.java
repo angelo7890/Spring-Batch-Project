@@ -1,6 +1,8 @@
 package com.example.project.spring.batch.configuration;
 
 
+import com.example.project.spring.batch.model.PersonReaderModel;
+import com.example.project.spring.batch.model.PersonWriterModel;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -31,8 +33,9 @@ public class BatchConfig {
     }
 
     @Bean
-    public Step step(ItemReader reader, ItemProcessor processor , ItemWriter writer) {
-        return new StepBuilder("step", jobRepository).chunk(100, transactionManager)
+    public Step step(ItemReader<PersonReaderModel> reader, ItemProcessor<PersonReaderModel, PersonWriterModel> processor , ItemWriter<PersonWriterModel> writer) {
+        return new StepBuilder("step", jobRepository)
+                .<PersonReaderModel, PersonWriterModel>chunk(100, transactionManager)
                 .reader(reader).processor(processor).writer(writer).build();
 
     }
