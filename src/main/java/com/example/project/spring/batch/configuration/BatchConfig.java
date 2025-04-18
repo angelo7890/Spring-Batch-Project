@@ -11,6 +11,8 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -22,6 +24,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class BatchConfig {
@@ -61,6 +65,33 @@ public class BatchConfig {
                         setTargetType(PersonReaderModel.class);
                     }});
                 }})
+                .build();
+    }
+
+    @Bean
+    public ItemProcessor<PersonReaderModel, PersonWriterModel> processor() {
+        return person ->{
+            return new PersonWriterModel(
+                   null,
+                   person.name(),
+                   person.email(),
+                   person.age(),
+                   person.cpf(),
+                   person.sex()
+           );
+        };
+    }
+
+
+    @Bean
+    public JdbcBatchItemWriter<PersonWriterModel> writer(DataSource db) {
+        return new JdbcBatchItemWriterBuilder<PersonWriterModel>()
+                .dataSource(db)
+                .sql("""
+                    INSERT INTO pessoa (name, email, age, cpf, sex)
+                    VALUES (:name, :email, :age, :cpf, :sex)
+                """)
+                .beanMapped()
                 .build();
     }
 }
