@@ -1,6 +1,5 @@
 package com.example.project.spring.batch.model;
 
-import java.util.Date;
 
 public record PersonWriterModel(
 
@@ -10,11 +9,11 @@ public record PersonWriterModel(
 
         String email,
 
-        Integer age,
+        int age,
 
         String cpf,
 
-        String sex
+        String gender
 
 ) {
 }

@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS pessoa (
+    id SERIAL PRIMARY KEY,
+    "name" VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    age INTEGER NOT NULL,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    gender CHAR(1) NOT NULL
+    );

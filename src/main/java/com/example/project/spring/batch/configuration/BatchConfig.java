@@ -14,10 +14,8 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,24 +46,26 @@ public class BatchConfig {
     public Step step(ItemReader<PersonReaderModel> reader, ItemProcessor<PersonReaderModel, PersonWriterModel> processor , ItemWriter<PersonWriterModel> writer) {
         return new StepBuilder("step", jobRepository)
                 .<PersonReaderModel, PersonWriterModel>chunk(100, transactionManager)
-                .reader(reader).processor(processor).writer(writer).build();
+                .reader(reader)
+                .processor(processor)
+                .writer(writer)
+                .build();
 
     }
 
     @Bean
     public FlatFileItemReader<PersonReaderModel> reader() {
-        return new FlatFileItemReaderBuilder<PersonReaderModel>()
-                .name("reader")
-                .resource(new FileSystemResource("files/pessoas.csv"))
-                .lineMapper(new DefaultLineMapper<PersonReaderModel>() {{
-                    setLineTokenizer(new DelimitedLineTokenizer() {{
-                        setNames("name", "email", "age", "cpf", "sex");
-                    }});
-                    setFieldSetMapper(new BeanWrapperFieldSetMapper<PersonReaderModel>() {{
-                        setTargetType(PersonReaderModel.class);
-                    }});
-                }})
-                .build();
+        FlatFileItemReader<PersonReaderModel> reader = new FlatFileItemReader<>();
+        reader.setResource(new FileSystemResource("files/pessoas.csv"));
+        reader.setLineMapper(new DefaultLineMapper<PersonReaderModel>() {{
+            setLineTokenizer(new DelimitedLineTokenizer() {{
+                setNames("name", "email", "age", "cpf", "gender");
+            }});
+            setFieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+                setTargetType(PersonReaderModel.class);
+            }});
+        }});
+        return reader;
     }
 
     @Bean
@@ -73,11 +73,11 @@ public class BatchConfig {
         return person ->{
             return new PersonWriterModel(
                    null,
-                   person.name(),
-                   person.email(),
-                   person.age(),
-                   person.cpf(),
-                   person.sex()
+                   person.getName(),
+                   person.getEmail(),
+                   person.getAge(),
+                   person.getCpf(),
+                   person.getGender()
            );
         };
     }
@@ -88,8 +88,8 @@ public class BatchConfig {
         return new JdbcBatchItemWriterBuilder<PersonWriterModel>()
                 .dataSource(db)
                 .sql("""
-                    INSERT INTO pessoa (name, email, age, cpf, sex)
-                    VALUES (:name, :email, :age, :cpf, :sex)
+                    INSERT INTO pessoa ("name", email, age, cpf, gender)
+                    VALUES (:name, :email, :age, :cpf, :gender)
                 """)
                 .beanMapped()
                 .build();
