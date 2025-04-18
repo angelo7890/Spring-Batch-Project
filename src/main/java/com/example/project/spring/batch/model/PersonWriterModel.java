@@ -14,9 +14,7 @@ public record PersonWriterModel(
 
         String cpf,
 
-        String sex,
-
-        Date date
+        String sex
 
 ) {
 }
