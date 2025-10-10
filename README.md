@@ -1,3 +1,4 @@
+![Badge](https://img.shields.io/badge/status-%20Finalizado-green)
 # 📊 Spring Batch - Processamento de Lotes com Banco de Dados H2
 
 Projeto desenvolvido com foco em demonstrar o uso do **Spring Batch** para o processamento em lote de dados e a persistência desses dados em um banco de dados relacional **H2 em memória**. Ideal para estudos, provas de conceito (PoCs) ou como base para sistemas de ETL em produção.
